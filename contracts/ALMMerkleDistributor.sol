@@ -21,8 +21,8 @@ contract ALMMerkleDistributor is IALMMerkleDistributor {
         merkleRoot[token_id_][epoch_] = merkleRoot_;
     }
 
-    function getMerkleRoot(uint256 epoch_, bytes32 merkleRoot_) public view override returns (uint256) {
-        return merkleRoot[epoch_][merkleRoot_];
+    function getMerkleRoot(uint256 token_id_, uint256 epoch_) public view override returns (bytes32) {
+        return merkleRoot[token_id_][epoch_];
     }
 
     function isClaimed(uint256 index, bytes32 merkleRoot_) public view override returns (bool) {
