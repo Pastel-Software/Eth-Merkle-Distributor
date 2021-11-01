@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity =0.6.11;
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/cryptography/MerkleProof.sol";
+import "./IERC20.sol";
+import "./MekrleProof.sol";
 import "./IALMMerkleDistributor.sol";
 
 contract ALMMerkleDistributor is IALMMerkleDistributor {
 
     // address of stable coin i.e USDT
     address public immutable override token;  
-    
+    address public immutable override owner;
     //alm token_id -> epoch -> merkleRoot
     mapping(uint256 => mapping(uint256 => bytes32)) private merkleRoot;
     
@@ -17,12 +17,18 @@ contract ALMMerkleDistributor is IALMMerkleDistributor {
     mapping(bytes32 => mapping(uint256 => uint256)) private claimedBitMap;
     
     constructor(address token_, uint256 token_id_, uint256 epoch_, bytes32 merkleRoot_) public {
+        owner = msg.sender;
         token = token_;
         merkleRoot[token_id_][epoch_] = merkleRoot_;
     }
 
     function getMerkleRoot(uint256 token_id_, uint256 epoch_) public view override returns (bytes32) {
         return merkleRoot[token_id_][epoch_];
+    }
+
+    function setMerkleRoot(uint256 token_id_, uint256 epoch_, bytes32 merkleRoot_) external override{
+        require(msg.sender == owner, "ALMMerkleDistributor: Only owner can call this function");
+        merkleRoot[token_id_][epoch_] = merkleRoot_;
     }
 
     function isClaimed(uint256 index, bytes32 merkleRoot_) public view override returns (bool) {
